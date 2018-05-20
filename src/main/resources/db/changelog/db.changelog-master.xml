@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="create_user_table" author="imarkin">
+        <createTable tableName="users">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" primaryKeyName="user_pk"/>
+            </column>
+            <column name="username" type="varchar2(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="pass" type="varchar2(60)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="enabled" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="firstname" type="varchar2(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastname" type="varchar2(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="varchar2(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastpassresetdate" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createSequence sequenceName="user_sequence"
+                        startValue="1"
+                        incrementBy="1"/>
+        <createIndex tableName="users" indexName="user_username_idx">
+            <column name="username"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="create_authority_table" author="imarkin">
+        <createTable tableName="authority">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" primaryKeyName="authority_pk"/>
+            </column>
+            <column name="name" type="varchar2(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+        <createSequence sequenceName="authority_sequence"
+                        startValue="1"
+                        incrementBy="1"/>
+    </changeSet>
+
+    <changeSet id="create_user_authority_table" author="imarkin">
+        <createTable tableName="user_authority">
+            <column name="user_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="authority_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="user_id, authority_id"
+                       constraintName="user_authority_pk"
+                       tableName="user_authority"/>
+
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="user_authority"
+                                 constraintName="user_authority_user_id_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"/>
+
+        <addForeignKeyConstraint baseColumnNames="authority_id"
+                                 baseTableName="user_authority"
+                                 constraintName="user_authority_authority_id_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="authority"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -81,4 +81,76 @@
                                  referencedTableName="authority"/>
     </changeSet>
 
+    <changeSet id="create_transaction_category" author="imarkin">
+        <createTable tableName="tr_category">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" primaryKeyName="transaction_category_pk"/>
+            </column>
+            <column name="income" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar2(100)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+
+        <createSequence sequenceName="tr_category_sequence"
+                        startValue="1"
+                        incrementBy="1"/>
+    </changeSet>
+
+    <changeSet id="create_transaction_table" author="imarkin">
+        <createTable tableName="tr_history">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" primaryKeyName="transaction_pk"/>
+            </column>
+            <column name="user_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="category_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="transaction_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sum" type="double">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="tr_history"
+                                 constraintName="tr_history_user_id_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"/>
+
+        <addForeignKeyConstraint baseColumnNames="category_id"
+                                 baseTableName="tr_history"
+                                 constraintName="tr_history_category_id_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="tr_category"/>
+
+        <createSequence sequenceName="tr_history_sequence"
+                        startValue="1"
+                        incrementBy="1"/>
+
+    </changeSet>
+
+    <changeSet id="crate_balance_table" author="imarkin">
+        <createTable tableName="balance">
+            <column name="user_id" type="integer">
+                <constraints primaryKey="true" primaryKeyName="balance_pk"/>
+            </column>
+            <column name="current_balance" type="double">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="balance"
+                                 constraintName="balance_user_id_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+
 </databaseChangeLog>

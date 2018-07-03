@@ -14,11 +14,15 @@ import ru.markin.kotlinsample.model.security.AuthorityName
 import ru.markin.kotlinsample.model.security.User
 import ru.markin.kotlinsample.repository.security.AuthorityRepository
 import ru.markin.kotlinsample.repository.security.UserRepository
+import ru.markin.kotlinsample.security.JwtTokenUtil
 import ru.markin.kotlinsample.security.JwtUserFactory
 import ru.markin.kotlinsample.security.util.Account
+import ru.markin.kotlinsample.service.util.NotFoundObjectException
 import java.util.*
 
 class UserAlreadyExistException(message: String?) : RuntimeException(message)
+
+class InvalidTokenException(message: String?) : RuntimeException(message)
 
 @Service
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -32,6 +36,9 @@ class UserAuthorityService {
 
     @Autowired
     private lateinit var passEncoder: PasswordEncoder
+
+    @Autowired
+    private lateinit var jwtTokenUtil: JwtTokenUtil
 
     @Transactional
     fun getAuthority(authorityName: AuthorityName): GrantedAuthority? {
@@ -66,12 +73,23 @@ class UserAuthorityService {
             this.email = account.email
             this.firstName = account.firstName
             this.lastName = account.lastName
-            this.enabled = true
+            this.isEnabled = true
             this.lastPasswordResetDate = Date()
             this.authorities += authority
         })
 
         return JwtUserFactory.create(savedUser)
+    }
+
+    @Transactional
+    fun getCurrentUserId(token: String): Int {
+
+        val username = this.jwtTokenUtil.getUsernameFromToken(token)
+
+        username ?: throw InvalidTokenException("'token' = $token")
+
+        return this.userRepository.findByUsername(username)?.id
+                ?: throw NotFoundObjectException("'username' = $username")
     }
 
     private fun createAuthIfNotExist(authorityName: AuthorityName): Authority {

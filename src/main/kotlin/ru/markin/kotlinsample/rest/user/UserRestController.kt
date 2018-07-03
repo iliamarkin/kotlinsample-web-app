@@ -1,4 +1,4 @@
-package ru.markin.kotlinsample.security.controller
+package ru.markin.kotlinsample.rest.user
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -24,9 +24,9 @@ class UserRestController {
     @Qualifier("jwtUserDetailsService")
     private lateinit var userDetailsService: UserDetailsService
 
-    @RequestMapping(value = ["user"], method = [(RequestMethod.GET)])
+    @RequestMapping(value = ["/user"], method = [(RequestMethod.GET)])
     fun getAuthenticatedUser(request: HttpServletRequest): JwtUser {
-        val token = request.getHeader(this.tokenHeader).substring(7)
+        val token = request.getHeader(this.tokenHeader)
         val username = this.jwtTokenUtil.getUsernameFromToken(token)
         return this.userDetailsService.loadUserByUsername(username) as JwtUser
     }

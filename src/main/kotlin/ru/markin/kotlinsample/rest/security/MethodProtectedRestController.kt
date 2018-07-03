@@ -1,4 +1,4 @@
-package ru.markin.kotlinsample.security.controller
+package ru.markin.kotlinsample.rest.security
 
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("protected")
+@RequestMapping("/protected")
 class MethodProtectedRestController {
 
     /**

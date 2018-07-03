@@ -20,14 +20,12 @@ class JwtAuthorizationTokenFilter(private val userDetailsService: UserDetailsSer
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain) {
         this.log.debug("processing authentication for '${request.requestURL}'")
 
-        val requestHeader = request.getHeader(this.tokenHeader)
+        val requestTokenHeader = request.getHeader(this.tokenHeader)
 
         var username: String? = null
-        var authToken: String? = null
-        if (requestHeader != null && requestHeader.startsWith("Bearer ")) {
-            authToken = requestHeader.substring(7)
+        if (requestTokenHeader != null) {
             try {
-                username = this.jwtTokenUtil.getUsernameFromToken(authToken)
+                username = this.jwtTokenUtil.getUsernameFromToken(requestTokenHeader)
             } catch (e: IllegalArgumentException) {
                 this.logger.error("an error occurred during getting username from token", e)
             } catch (e: ExpiredJwtException) {
@@ -48,7 +46,7 @@ class JwtAuthorizationTokenFilter(private val userDetailsService: UserDetailsSer
 
             // For simple validation it is completely sufficient to just check the token integrity. You don't have to call
             // the database compellingly. Again it's up to you ;)
-            if (this.jwtTokenUtil.validateToken(authToken!!, userDetails)!!) {
+            if (this.jwtTokenUtil.validateToken(requestTokenHeader!!, userDetails)!!) {
                 val authentication = UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)
                 authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
                 this.logger.info("authorized user '$username', setting security context")

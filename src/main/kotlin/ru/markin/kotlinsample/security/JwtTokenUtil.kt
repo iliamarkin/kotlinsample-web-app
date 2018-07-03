@@ -23,16 +23,16 @@ class JwtTokenUtil : Serializable {
     @Value("\${jwt.expiration}")
     private val expiration: Long = 0L
 
-    fun getUsernameFromToken(token: String): String {
-        return getClaimFromToken<String>(token, { it.subject })
+    fun getUsernameFromToken(token: String): String? {
+        return getClaimFromToken(token, { it.subject })
     }
 
-    fun getIssuedAtDateFromToken(token: String): Date {
-        return getClaimFromToken<Date>(token, { it.issuedAt })
+    fun getIssuedAtDateFromToken(token: String): Date? {
+        return getClaimFromToken(token, { it.issuedAt })
     }
 
-    fun getExpirationDateFromToken(token: String): Date {
-        return getClaimFromToken<Date>(token, { it.expiration })
+    fun getExpirationDateFromToken(token: String): Date? {
+        return getClaimFromToken(token, { it.expiration })
     }
 
     private fun <R> getClaimFromToken(token: String, claimsResolver: (Claims) -> R): R {
@@ -49,11 +49,12 @@ class JwtTokenUtil : Serializable {
 
     private fun isTokenExpired(token: String): Boolean {
         val expiration = getExpirationDateFromToken(token)
-        return expiration.before(clock.now())
+        return expiration?.before(clock.now()) ?: true
     }
 
-    private fun isCreatedBeforeLastPasswordReset(created: Date, lastPasswordReset: Date?): Boolean {
-        return lastPasswordReset != null && created.before(lastPasswordReset)
+    private fun isCreatedBeforeLastPasswordReset(created: Date?, lastPasswordReset: Date?): Boolean {
+        return lastPasswordReset != null && created != null
+                && created.before(lastPasswordReset)
     }
 
     private fun ignoreTokenExpiration(token: String): Boolean {

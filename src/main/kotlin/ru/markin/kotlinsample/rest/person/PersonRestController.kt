@@ -18,7 +18,7 @@ class PersonRestController {
         persons.add(Person("Foo", "Bar"))
     }
 
-    @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
+    @PreAuthorize(value = "hasRole('ROLE_USER')")
     @RequestMapping(path = ["/persons"], method = [(RequestMethod.GET)])
     fun getPersons(): List<Person> {
         return persons
@@ -27,6 +27,6 @@ class PersonRestController {
     @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
     @RequestMapping(path = ["/persons/{name}"], method = [(RequestMethod.GET)])
     fun getPerson(@PathVariable("name") name: String): Person? {
-        return persons.first { person -> name.equals(person.name, ignoreCase = true) }
+        return persons.firstOrNull { person -> name.equals(person.name, ignoreCase = true) }
     }
 }

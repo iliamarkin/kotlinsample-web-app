@@ -1,4 +1,4 @@
-package ru.markin.kotlinsample.security.controller
+package ru.markin.kotlinsample.rest.security
 
 class AuthenticationException(message: String?, cause: Throwable?) : RuntimeException(message, cause)
 

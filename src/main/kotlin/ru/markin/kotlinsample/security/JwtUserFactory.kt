@@ -2,9 +2,9 @@ package ru.markin.kotlinsample.security
 
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
-import ru.markin.kotlinsample.security.util.JwtUser
 import ru.markin.kotlinsample.model.security.Authority
 import ru.markin.kotlinsample.model.security.User
+import ru.markin.kotlinsample.security.util.JwtUser
 
 object JwtUserFactory {
 
@@ -17,7 +17,7 @@ object JwtUserFactory {
             email { user.email }
             password { user.password }
             authorities { mapToGrantedAuthorities(user.authorities) }
-            enabled { user.enabled }
+            enabled { user.isEnabled }
             lastPasswordResetDate { user.lastPasswordResetDate }
         }
     }
